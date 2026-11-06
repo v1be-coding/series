@@ -1,0 +1,3 @@
+# One café backend, owned by Collective POS
+
+Episodes 4–7 (Collective POS, the café website with the QR menu assistant, Café Copilot, Ubos Na!) all need the same sales, menu and supply data. They share one **café backend** instead of each episode keeping its own copy. Separate stores would have meant building sync or ETL just so Café Copilot and Ubos Na! could see sales. Collective POS owns the schema. Later café episodes reach the data through the backend's API or read-only access and never write to POS-owned tables directly. As a result, episode 4's data model is a long-lived decision that later episodes extend rather than reshape.
