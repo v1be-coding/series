@@ -50,7 +50,7 @@ month, with cost guards that stop runaway spend.
   the list of episodes.
 - **The template repo** is where every episode starts. It comes with CI,
   pre-commit hooks, git guardrails, the smoke test, Lambda bundling, the
-  CloudFront module and a pinned copy of the skills.
+  CloudFront module for branch environments and a pinned copy of the skills.
 - **Everything lives in the `v1be-coding` GitHub org.**
 
 The words are defined in [GLOSSARY.md](./GLOSSARY.md), and the reasons for
