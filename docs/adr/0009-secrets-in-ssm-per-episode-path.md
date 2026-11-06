@@ -9,4 +9,6 @@ Each episode's path has two branches: `/<episode>/third-party/...` for keys from
 
 The Cloudflare origin header is the one secret that isn't in SSM. A CloudFront Function has no network access and can't call SSM, so `v1be-infra` writes the value straight to the Cloudflare transform rule and a CloudFront KeyValueStore (ADR-0010). It's also a single series-wide value. Cloudflare can only add a fixed header value, so one value per episode would need one transform rule per episode, and the free plan allows 10 per domain in total. A leaked value would let someone skip the Cloudflare edge for every episode, but the app-level rate limits and spend caps still apply behind it.
 
+The Infracost key is the other exception. It's a single GitHub organization Actions secret, entered through a `wizard`, and only the Infracost step receives it. It's series-wide and used only in CI, and a leak would expose a pricing key, not an account.
+
 Secrets Manager is the dedicated service and offers the same IAM scoping, but it costs $0.40 per secret per month. At 10–15 secrets that's the series' entire monthly budget. Its one extra feature is automatic rotation, and none of our API keys support it. A secret that needs rotation can use Secrets Manager through an episode ADR.

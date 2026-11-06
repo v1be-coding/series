@@ -31,11 +31,23 @@ The supervised phase before a run that prepares what the run can't touch: DNS, c
 _Avoid_: Bootstrap, provisioning step
 
 **Run**:
-One execution of `/implement-spec` on a fresh branch. It writes code, including app resources in the repo's infrastructure code, and pushes. It never touches accounts, DNS or secrets.
+One execution of `/attempt` on a fresh branch, from building through landing the PR and fixing what fails. It writes code, including app resources in the repo's infrastructure code, and pushes. It never touches accounts, DNS or secrets.
 _Avoid_: Build, session
 
+**Round**:
+One CI pass that ends in failure. An attempt gets at most five.
+_Avoid_: Retry, iteration
+
+**Test contract**:
+The part of a spec that fixes what frozen tests may rely on: routes, data shapes, on-screen names and text, and any data that must already exist.
+_Avoid_: Interface, scaffold
+
+**Frozen test**:
+A test written during the Spec phase that a run can't change. Frozen tests cover acceptance tests, the smoke test and eval thresholds.
+_Avoid_: Locked test, hidden test
+
 **Branch environment**:
-A temporary, complete deployment of one attempt's branch, with its own URL and seed data. It's destroyed when the branch closes.
+A temporary, complete deployment of one attempt's branch, with its own URL and seed data. It's destroyed when the attempt's PR closes.
 _Avoid_: Preview, staging, stage
 
 **Attempt**:

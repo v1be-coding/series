@@ -13,7 +13,7 @@ CI may create IAM roles, because the Lambdas and branch environments an agent wr
 
 - Every episode resource is named `v1be-<episode>-...` and tagged `episode=<episode>`. AWS needs both, because some resources can only be matched by name and others only by tag. Isolation is still partial: AWS can't scope CloudFront origin access controls or cache policies, so CI gets no write access to them (ADR-0010).
 - Trust policies are built in Terraform from numeric org and repo IDs, because repos created after July 15, 2026 use GitHub's immutable `sub` format.
-- Portfolio episode roles trust any branch of the episode's repo, because branch environments need it. Café roles trust only GitHub's `production` environment, which requires human approval, so AWS itself enforces the ADR-0005 gate.
+- Portfolio episode roles trust the `pull_request` token of the episode's repo, for branch environments, and `main`. They don't trust every branch, so a branch deploys only through a PR from its own repo, once that PR is ready for review. Draft pushes don't deploy, and PRs from forks are refused. A café episode also gets a role in `portfolio` for its demo. Café roles trust only GitHub's `production` environment, which requires human approval, so AWS itself enforces the ADR-0005 gate.
 - CI roles are denied writing SSM, Organizations, Budgets and account settings.
 - The ADR-0007 Budgets action attaches its deny-all policy to every portfolio episode role, so its role list comes from the episodes list.
 - CI roles don't use `managed_policy_arns` or `aws_iam_role_policy_attachments_exclusive`, because Terraform would remove the Budgets action's deny-all policy on the next apply.
