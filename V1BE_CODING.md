@@ -9,17 +9,24 @@ better. The finished apps live on the portfolio site.
 
 ## Rules
 
-1. **Spec, then one run.** Grill → spec → tickets, then `/implement-spec` builds
-   it in one run. No hand edits, no "fix this" prompts.
+1. **Spec, then one run.** Grill → spec → tickets → frozen tests, then `/attempt`
+   builds and lands it in one run. No hand edits, no "fix this" prompts.
 2. **Green means deployed.** Every acceptance criterion passes, including a
    passing smoke test on the attempt's branch environment and again on
-   production after the merge. Criteria are either automated (tests, evals
-   with thresholds) or a pass/fail product checklist written into the spec
-   ahead of time. Subjective "taste" items are scored 1–5 and never gate.
-3. **A failed run goes back to the spec.** Log what the spec missed as a comment
+   production after the merge. Criteria are either automated (frozen tests,
+   evals with thresholds) or a pass/fail product checklist written into the
+   spec ahead of time, which I check on the branch environment before the
+   merge. Anything about the real domain must be a smoke test. Subjective
+   "taste" items are scored 1–5 and never gate.
+3. **A failed run goes back to the spec.** A run fixes its own CI failures, up
+   to 5 failed rounds counted by CI. It fails when those run out, when I reject
+   an approval, or when it stops over a frozen test that looks wrong, which it
+   must do instead of bending the app to pass. A production failure gets a fix
+   PR with the same limit, then a revert. Log what the spec missed as a comment
    on the spec issue, fix the spec, and rerun on a fresh branch. At most 3
    attempts; publish the result honestly either way. Fixing setup (keys, DNS)
-   is allowed but logged.
+   is allowed but logged, and so is my ruling that an outage doesn't count
+   against an attempt.
 4. **One day per episode** is the target. Scope is cut to fit it, and the real
    time is recorded.
 5. **Every app has an AI feature**, with rate limiting and a daily spend cap
@@ -42,22 +49,22 @@ month, with cost guards that stop runaway spend.
   `portfolio`), the GitHub deploy roles, the cost guards, the state buckets and
   the list of episodes.
 - **The template repo** is where every episode starts. It comes with CI,
-  pre-commit hooks, git guardrails, the smoke test, Lambda bundling and the
-  CloudFront module.
+  pre-commit hooks, git guardrails, the smoke test, Lambda bundling, the
+  CloudFront module and a pinned copy of the skills.
 - **Everything lives in the `v1be-coding` GitHub org.**
 
 The words are defined in [GLOSSARY.md](./GLOSSARY.md), and the reasons for
 each choice are in [docs/adr/](./docs/adr/).
 
-## Workflow (stock skills for now)
+## Workflow (stock skills, plus `/attempt` and `/acceptance`)
 
-| Phase | Steps                                                                                                                                                          |
-| ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Setup | Claude adds the episode to `v1be-infra` in a PR. I merge it, create the repo from the template in Windows Sandbox, and approve the CI apply (DNS, certificate, generated secrets, CI role). `/setup-matt-pocock-skills` (GitHub Issues). I set the Anthropic workspace's monthly limit in the Console and enter third-party keys through a `wizard` prompt straight into SSM |
-| Spec  | `research` as needed → `/grill-with-docs` → `/to-spec` → `/to-tickets`                                                                                         |
-| Code  | `/implement-spec` on a fresh branch; CI deploys a branch environment and runs the smoke test                                                                   |
-| Ship  | Merge to `main` deploys production and reruns the smoke test (café production waits for my approval); product checklist, then the episode page on the portfolio |
-| After | `/retro`, workflow changelog entry                                                                                                                             |
+| Phase | Steps |
+| ----- | ----- |
+| Setup | Claude adds the episode to `v1be-infra` in a PR. I merge it, run `org` in Windows Sandbox, which creates the repo from the template with its rules, and approve the CI apply (DNS, certificate, generated secrets, CI role). I set the Anthropic workspace's monthly limit in the Console and enter third-party keys through a `wizard` prompt straight into SSM |
+| Spec  | `research` or `field-reports` as needed → `/grill-with-docs` → `/to-spec` → `/to-tickets` → `/acceptance` in a fresh session, which writes the test contract and frozen tests. I review them and merge |
+| Code  | `/attempt` on a fresh branch follows `implement-spec` and marks the PR ready. CI runs the required check: unit tests, Infracost, branch environment, smoke test, frozen tests, evals, then the product checklist, which waits for my approval. The agent fixes failures, and GitHub merges when the check passes |
+| Ship  | Merge to `main` deploys production and reruns the smoke test (a café episode deploys its demo first, then production waits for my approval). The agent watches this through, then I publish the episode page on the portfolio |
+| After | `/retro`, workflow changelog entry |
 
 ## Each episode publishes
 
@@ -66,7 +73,10 @@ each choice are in [docs/adr/](./docs/adr/).
 - **A portfolio page:** description, demo GIF, links, scorecard, a "How it
   works" section in my own words, and a retro section
 - **Scorecard:** time to green, attempts, tests passing on attempt 1, build
-  cost, model used, what the spec missed
+  cost, model used, what the spec missed, frozen tests that turned out wrong.
+  `/retro` reads these from GitHub where it can. Time to green leaves out time
+  spent waiting for my approvals, and tests passing on attempt 1 means frozen
+  tests on that attempt's first CI run
 
 ## Lineup
 
