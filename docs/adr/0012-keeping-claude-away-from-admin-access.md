@@ -30,5 +30,5 @@ This separation doesn't stop bad code once it's merged. Terraform runs merged co
 - The user commits workflow changes themselves, from Claude's draft.
 - `edge` and `episodes` state moves to `v1be-infra-state` in `portfolio`, so CI never touches the management account (ADR-0011).
 - An SCP on both member accounts denies `iam:CreateUser` and `iam:CreateAccessKey`, because people use Identity Center and CI uses OIDC. Long-lived keys would outlast the sessions this separation relies on.
-- The separation only works if the user's PC is sound, so UAC prompts go back on, and a standard everyday account follows.
+- The separation only works if the user's PC is sound, so UAC prompts stay on.
 - Windows Sandbox doesn't shield itself from the host account. `wsb exec` runs commands in a running Sandbox, including as SYSTEM, with no prompt, even with UAC on Always notify. So the dev container comes before every admin login, and Claude never runs on Windows beside a logged-in Sandbox.
