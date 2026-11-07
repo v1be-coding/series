@@ -14,3 +14,4 @@ Every episode uses Aurora DSQL unless its own ADR says otherwise. ADR-0002 rules
 - There are no triggers or temp tables. A transaction can modify at most 3,000 rows and run at most 5 minutes.
 - DSQL has no point-in-time recovery, only AWS Backup snapshots, so café production protects real data separately.
 - The free tier (100k DPUs and 1 GB per month) is shared by every account in the AWS Organization.
+- The template's per-IP limit and daily AI spend cap keep their counters in DynamoDB, in one table per target, as atomic counters whose rows expire by themselves. In DSQL, every request would add a write, writes from one IP would conflict with each other, and they would use the shared DPUs. These counters belong to the template, not to an episode's data, so they need no episode ADR. App data still lives in DSQL.
