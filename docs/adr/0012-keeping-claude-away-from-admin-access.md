@@ -4,13 +4,13 @@ Claude writes all the Terraform, so its code must never run beside an admin logi
 
 | Environment | Runs | Holds |
 | ------------------- | --------------------------------- | ------------------------------------------- |
-| Dev container       | Claude                            | `v1be-bot`'s token and `claude-readonly`    |
+| Dev container       | Claude                            | `v1be-agent`'s key and `claude-readonly`    |
 | Windows Sandbox     | `org`, `accounts`, by the user    | The user's admin, GitHub owner logins       |
 | GitHub Actions      | `edge`, `episodes`                | Cloudflare token and OIDC roles, on protected environments |
 
 `org` can't move to CI, because a role in the management account sits outside every SCP, and a leak from it could remove the guardrails. `accounts` creates the login CI uses, so it can't move either.
 
-`v1be-bot` can open PRs but can't edit workflows or merge in `v1be-infra`. The workflow that runs the required check comes from the PR, so a bot that could edit workflows could switch the check off. `claude-readonly` can view `portfolio` and read its logs and view the café account. It has no access to the management account and is denied secret values, state and KMS decrypt.
+`v1be-agent` is a GitHub App owned by the org. It can open PRs and read CI results, but it can't edit workflows or merge in `v1be-infra`. The workflow that runs the required check comes from the PR, so an agent that could edit workflows could switch the check off. `claude-readonly` can view `portfolio` and read its logs and view the café account. It has no access to the management account and is denied secret values, state and KMS decrypt.
 
 This separation doesn't stop bad code once it's merged. Terraform runs merged code beside its tokens, so the user reading the diff is the real gate. The separation limits what a mistake or prompt injection can reach before that point, and it means the management account is never reachable from anything Claude wrote without the user running it in the Sandbox.
 
@@ -21,13 +21,16 @@ This separation doesn't stop bad code once it's merged. Terraform runs merged co
 - **WSL2 as the separation:** rejected because it shares the Windows files and the user's account by default, and it ranked sixth of the options researched.
 - **Terraform in CI creates episode repos:** rejected because it needs a GitHub token able to create and change repos, sitting beside merged code.
 - **The user creates episode repos by hand:** rejected because settings and environments would become by-hand steps too, against ADR-0006.
-- **One required approval on `main`:** rejected as the merge rule because the bot can't push workflows and the user can't approve their own PR, so no workflow change could land. Only the user can merge instead, which is also stricter on Claude.
+- **One required approval on `main`:** rejected as the merge rule because the agent can't push workflows and the user can't approve their own PR, so no workflow change could land. Only the user can merge instead, which is also stricter on Claude.
+- **A machine account:** used first, as `v1be-bot`, then GitHub suspended it on 2026-11-06. A GitHub App replaced it, because GitHub supports Apps for automation, the org owns the App, and its tokens last an hour.
 
 ## Consequences
 
 - This repo's CI now plans and applies, reversing the earlier rule that it only checks code. Pull requests still never run `terraform plan`.
 - Adding an episode takes one Sandbox run, so that step needs the user at their PC.
 - The user commits workflow changes themselves, from Claude's draft.
+- The App reads Actions, checks and statuses, so Claude can fix a failed run from its logs. It still has no Actions write, so a retry needs a new commit.
+- The App's private key sits in the dev container's `gh-config` volume and rotates every 90 days. A new repo needs the App installing on it.
 - `edge` and `episodes` state moves to `v1be-infra-state` in `portfolio`, so CI never touches the management account (ADR-0011).
 - An SCP on both member accounts denies `iam:CreateUser` and `iam:CreateAccessKey`, because people use Identity Center and CI uses OIDC. Long-lived keys would outlast the sessions this separation relies on.
 - The separation only works if the user's PC is sound, so UAC prompts stay on.

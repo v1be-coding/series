@@ -2,6 +2,10 @@
 
 Changes to how the series is built, newest first. Each episode's retro adds an entry when it changes the workflow.
 
+## 2026-11-07: Foundation, GitHub App
+
+- Claude now works as the org-owned GitHub App `v1be-agent`, replacing the suspended `v1be-bot` account (ADR-0012).
+
 ## 2026-11-06: Foundation, phase E slice 2
 
 - `v1be-infra` now owns each episode's production distribution, bucket, API shell and DNS, so a run can't reach the origin secret (ADR-0010).
