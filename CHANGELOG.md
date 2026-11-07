@@ -2,6 +2,10 @@
 
 Changes to how the series is built, newest first. Each episode's retro adds an entry when it changes the workflow.
 
+## 2026-11-06: Foundation, phase E slice 2
+
+- `v1be-infra` now owns each episode's production distribution, bucket, API shell and DNS, so a run can't reach the origin secret (ADR-0010).
+
 ## 2026-11-06: Foundation, phase E design
 
 - Runs now land themselves through GitHub auto-merge, judged by one required check (ADR-0013).
