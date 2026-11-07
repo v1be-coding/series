@@ -61,7 +61,7 @@ Data from actual café operations. It exists only in café production and never 
 _Avoid_: Production data, live data
 
 **Seed data**:
-Realistic fake data committed to a repo so that demos and branch environments look real without exposing real data.
+Realistic fake data committed to a repo so that every target except café production looks real without exposing real data.
 _Avoid_: Mock data, test data, dummy data
 
 ## Café
