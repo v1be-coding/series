@@ -54,6 +54,10 @@ _Avoid_: Preview, staging, stage
 A run plus whatever spec fixes came before it. An episode gets at most three.
 _Avoid_: Try, iteration
 
+**Build cost**:
+What an episode's runs cost: every `/attempt` session for the spec, subagents included, priced by Claude Code at Anthropic's list prices and read from its session records by `/scorecard`. Dollars lead, with tokens as context. The Spec phase, such as `/acceptance` and frozen test fixes, is shown on its own line where it can be measured, and isn't part of it, so episodes compare fairly and the cost of running `tdd` can be judged on the runs alone.
+_Avoid_: Token cost, spend, API bill
+
 ## Data
 
 **Real data**:
