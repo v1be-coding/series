@@ -3,7 +3,15 @@
 Secrets are SSM Parameter Store SecureString parameters, encrypted with the AWS-managed key and stored under one path per episode (`/<episode>/...`). The template repo's Lambda module grants `ssm:GetParameter` on its own episode's path only, so one episode can never read another's keys. Branch environments share their episode's secrets, and café production's secrets live only in `collective-cafe-prod`. CI and Lambdas can only read them. Values are written during Setup in one of two ways:
 
 - **Generated secrets** (internal signing keys): `v1be-infra` creates them with Terraform's `random_password`, and nobody needs to see them. They do sit in Terraform state, which `v1be-infra`'s CI can read.
-- **Third-party keys** (Anthropic, Google, Facebook): the human creates them in the provider's console and enters them through a `wizard` prompt that writes straight to SSM. They never pass through a chat with Claude, because a transcript would keep them.
+- **Third-party keys** (Google, Facebook; Anthropic needs none, see below): the human creates them in the provider's console and enters them through a `wizard` prompt that writes straight to SSM. They never pass through a chat with Claude, because a transcript would keep them.
+
+Anthropic is the exception, since 2026-11-17: there is no Anthropic key at all.
+
+- Each episode's production Lambda asks AWS STS for a token, and Anthropic's workload identity federation swaps it for a short-lived Claude token. Anthropic recommends this over long-lived keys for cloud workloads.
+- Anthropic trusts one exact role ARN, through a rule on its side. The episode's boundary lets roles ask only for Anthropic-audience tokens lasting 5 minutes or less.
+- What Setup stores is four IDs that aren't secret, in `/<episode>/third-party/anthropic-federation`.
+- A leak leaves nothing reusable to copy, and there's nothing to rotate.
+- If federation ever fails, the fallback is a service account key, written to SSM like any other third-party key.
 
 Each episode's path has two branches: `/<episode>/third-party/...` for keys from outside vendors, and `/<episode>/internal/...` for secrets we generate. An SCP on both member accounts stops Identity Center sessions and `v1be-infra`'s CI roles reading the `third-party` branch directly. Terraform never needs those values, so the block costs nothing. It can't cover `internal`, because Terraform reads those on every refresh. The SCP isn't absolute, since an admin could work around it, but doing so takes several visible steps.
 
