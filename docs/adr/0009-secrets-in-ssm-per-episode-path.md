@@ -8,7 +8,7 @@ Secrets are SSM Parameter Store SecureString parameters, encrypted with the AWS-
 Anthropic is the exception, since 2026-11-17: there is no Anthropic key at all.
 
 - Each episode's production Lambda asks AWS STS for a token, and Anthropic's workload identity federation swaps it for a short-lived Claude token. Anthropic recommends this over long-lived keys for cloud workloads.
-- Anthropic trusts one exact role ARN, through a rule on its side. The episode's boundary lets roles ask only for Anthropic-audience tokens lasting 5 minutes or less.
+- Anthropic trusts the episode's API roles, `v1be-<episode>-api-*` (production and each branch environment), through a rule on its side. Only the episode's CI can make roles with that name. The episode's boundary lets roles ask only for Anthropic-audience tokens lasting 5 minutes or less.
 - What Setup stores is four IDs that aren't secret, in `/<episode>/third-party/anthropic-federation`.
 - A leak leaves nothing reusable to copy, and there's nothing to rotate.
 - If federation ever fails, the fallback is a service account key, written to SSM like any other third-party key.
