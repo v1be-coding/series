@@ -2,6 +2,10 @@
 
 Changes to how the series is built, newest first. Each episode's retro adds an entry when it changes the workflow.
 
+## 2026-11-17: Episode 0, Setup
+
+- Episodes that call Anthropic store no key. In Setup, an admin runs `anthropic-workload.sh` in Windows Sandbox. It gives the episode its own workspace with a spend limit, and a federation rule for its production Lambda role (ADR-0009).
+
 ## 2026-11-07: Foundation, GitHub App
 
 - Claude now works as the org-owned GitHub App `v1be-agent`, replacing the suspended `v1be-bot` account (ADR-0012).
