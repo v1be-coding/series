@@ -60,7 +60,7 @@ each choice are in [docs/adr/](./docs/adr/).
 
 | Phase | Steps |
 | ----- | ----- |
-| Setup | Claude adds the episode to `v1be-infra` in a PR. I merge it, run `org` in Windows Sandbox, which creates the repo from the template with its rules, and approve the CI apply (DNS, certificate, generated secrets, CI role). I set the Anthropic workspace's monthly limit in the Console and enter third-party keys through a `wizard` prompt straight into SSM |
+| Setup | Claude adds the episode to `v1be-infra` in a PR. I merge it, run `org` in Windows Sandbox, which creates the repo from the template with its rules, and approve the CI apply (DNS, certificate, generated secrets, CI role). For an episode that calls Anthropic, I run `anthropic-workload.sh` in Windows Sandbox, which creates its workspace with a spend limit and a federation rule, and stores no key (ADR-0009). Any other third-party key goes through a `wizard` prompt straight into SSM |
 | Spec  | `research` or `field-reports` as needed → `/grill-with-docs` → `/to-spec` → `/to-tickets` → `/acceptance` in a fresh session, which writes the test contract and frozen tests. I review them and merge |
 | Code  | `/attempt` on a fresh branch follows `implement-spec` and marks the PR ready. CI runs the required check: unit tests, Infracost, branch environment, smoke test, frozen tests, evals, then the product checklist, which waits for my approval. The agent fixes failures, and GitHub merges when the check passes |
 | Ship  | Merge to `main` deploys production and reruns the smoke test (a café episode deploys its demo first, then production waits for my approval). The agent watches this through, then I publish the episode page on the portfolio |
