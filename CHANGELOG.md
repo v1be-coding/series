@@ -6,6 +6,7 @@ Changes to how the series is built, newest first. Each episode's retro adds an e
 
 - `/attempt` gets its attempt number from the preflight script, so a run asks the user nothing in its first minute. Agents format each edited file with Prettier through a hook, and time a branch environment with `time-requests.mjs` instead of `curl` (`episode-template` #94).
 - A spec states a `## Product checklist`, which the user approves against, and an episode with `pages = true` ships a 404 page and a favicon (`docs/agents/spec.md`).
+- The template's numbered decisions, cited in its files as Q<n>, are published in `docs/decisions.md`. They were only in a private note, so episode sessions couldn't read them.
 - Setup adds each episode repo's numeric ID to `episodes.tfvars` once the repo exists, step 3c of `adding-an-episode.md`. CI no longer calls GitHub during an apply (`v1be-infra` #62 to #65).
 
 ## 2026-11-17: Episode 0, Setup
