@@ -2,6 +2,12 @@
 
 Changes to how the series is built, newest first. Each episode's retro adds an entry when it changes the workflow.
 
+## 2026-11-20: Episode 1 retro
+
+- `/attempt` gets its attempt number from the preflight script, so a run asks the user nothing in its first minute. Agents format each edited file with Prettier through a hook, and time a branch environment with `time-requests.mjs` instead of `curl` (`episode-template` #94).
+- A spec states a `## Product checklist`, which the user approves against, and an episode with `pages = true` ships a 404 page and a favicon (`docs/agents/spec.md`).
+- Setup adds each episode repo's numeric ID to `episodes.tfvars` once the repo exists, step 3c of `adding-an-episode.md`. CI no longer calls GitHub during an apply (`v1be-infra` #62 to #65).
+
 ## 2026-11-17: Episode 0, Setup
 
 - Episodes that call Anthropic store no key. In Setup, an admin runs `anthropic-workload.sh` in Windows Sandbox. It gives the episode its own workspace with a spend limit, and a federation rule for its production Lambda role (ADR-0009).

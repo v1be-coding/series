@@ -83,7 +83,7 @@ each choice are in [docs/adr/](./docs/adr/).
 | #   | Episode                              | What it is                                                    | Platform                        |
 | --- | ------------------------------------ | ------------------------------------------------------------- | ------------------------------- |
 | 0   | Portfolio site                       | Series home + "Ask about Emiliano" chat                       | Web                             |
-| 1   | AInakupo!                            | LLM tracing, cost and evals; later episodes report through it | Web + npm                       |
+| 1   | AInakupo!                            | LLM tracing, cost and evals; later episodes report through it | Web (SDK served by the site)    |
 | 2   | Kahit Saan                           | The barkada picks where to eat; an agent proposes places      | Expo, web first                 |
 | 3   | Ulam?                                | Fridge photo → what to cook, step by step                     | Expo, web first                 |
 | 4   | Collective POS                       | Replaces the café's Google Sheets POS; works offline          | Android tablet (direct install) |
